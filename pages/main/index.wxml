@@ -1,0 +1,31 @@
+<!--pages/main/index.wxml-->
+
+<view class="container">
+
+  <view class="title">表情包生成器</view>
+
+  <view class="page-body">
+    <view class="page-section">
+      <view class="page-body-info">
+        <block wx:if="{{imageSrc}}">
+          <image src="{{imageSrc}}" class="image" mode="aspectFit"></image>
+        </block>
+
+        <block wx:else>
+          <view class="image-plus image-plus-nb" bindtap="chooseImage">
+            <view class="image-plus-horizontal"></view>
+            <view class="image-plus-vertical"></view>
+          </view>
+          <view class="image-plus-text">选择图片</view>
+        </block>
+      </view>
+    </view>
+
+    <view class="page-text">
+      <view class="page-section-title">点击「生成」按钮，自动为这张图片配上文字！</view>
+    </view>
+    <view class="btn-area">
+      <button bindtap="downloadImage" type="primary">生成</button>
+    </view>
+  </view>
+</view>
