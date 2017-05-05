@@ -8,7 +8,7 @@
     <view class="page-section">
       <view class="page-body-info">
         <block wx:if="{{imageSrc}}">
-          <image src="{{imageSrc}}" class="image" mode="aspectFit"></image>
+          <image src="{{imageSrc}}" class="image" mode="aspectFit" bindtap="chooseImage"></image>
         </block>
 
         <block wx:else>
