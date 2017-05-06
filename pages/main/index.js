@@ -1,7 +1,7 @@
 // pages/main/index.js
-const uploadFileUrl_1 = `https://v1-api.visioncloudapi.com/face/detection`
-const uploadFileUrl = `http://127.0.0.1:7959/upload`
-const downloadUrl = `http://127.0.0.1:7959/download`
+
+const uploadFileUrl = `http://119.254.97.16:7959/upload`
+const downloadUrl = `http://119.254.97.16:7959/download`
 const ctx = wx.createCanvasContext('myCanvas')
 
 Page({
