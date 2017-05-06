@@ -1,5 +1,6 @@
 // pages/main/index.js
-const uploadFileUrl = `https://v1-api.visioncloudapi.com/face/detection`
+const uploadFileUrl_1 = `https://v1-api.visioncloudapi.com/face/detection`
+const uploadFileUrl = `http://127.0.0.1:7959/upload`
 const ctx = wx.createCanvasContext('myCanvas')
 
 Page({
@@ -7,7 +8,10 @@ Page({
     rect: [],
     emotionK: 0,
     emotionV: "",
-    obj: {}
+    obj: {},
+    display: false,
+    width: 0,
+    height: 0
   },
   onLoad: function (options) {
     // 页面初始化 options为页面跳转所带来的参数
@@ -24,76 +28,31 @@ Page({
   onUnload: function () {
     // 页面关闭
   },
+  
   downloadImage: function () {
     var self = this;
+    var tmpFilePath = this.data.imageSrc;
+    var width;
+    var height;
 
-    wx.request({
-      url: 'https://v1-api.visioncloudapi.com/info/api?api_id=f9bf8274b9174a5a852ed309bd960fda&api_secret=37adb7200e724998823919098a8601cb',
-      data: {},
-      method: 'GET', // OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, CONNECT
-      // header: {}, // 设置请求的 header
-      success: function(res){
-        // success
-        console.log(res.data)
-      },
-      fail: function(res) {
-        // fail
-      },
-      complete: function(res) {
-        // complete
-      }
-    })
-
-    // function mHandler() {
-    //   for (i = 0; i < 4; ++i) {
-    //     self.data.rect[i] = self.data.obj.faces.rect[i];
+    // wx.request({
+    //   url: 'https://v1-api.visioncloudapi.com/info/api?api_id=f9bf8274b9174a5a852ed309bd960fda&api_secret=37adb7200e724998823919098a8601cb',
+    //   data: {},
+    //   method: 'GET', // OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, CONNECT
+    //   // header: {}, // 设置请求的 header
+    //   success: function(res){
+    //     // success
+    //     console.log(res.data)
+    //     console.log(typeof(res.data))
     //   }
-    //   tmpV = self.data.obj.faces.emotions.angry;
-    //   tmpK = 'angry';
-    //   if (self.data.obj.faces.emotions.calm > tmpV) {
-    //     tmpV = self.data.obj.faces.emotions.calm;
-    //     tmpK = 'calm';
-    //   }
-    //   if (self.data.obj.faces.emotions.disgust > tmpV) {
-    //     tmpV = self.data.obj.faces.emotions.disgust;
-    //     tmpK = 'disgust';
-    //   }
-    //   if (self.data.obj.faces.emotions.happy > tmpV) {
-    //     tmpV = self.data.obj.faces.emotions.happy;
-    //     tmpK = 'happy';
-    //   }
-    //   if (self.data.obj.faces.emotions.sad > tmpV) {
-    //     tmpV = self.data.obj.faces.emotions.sad;
-    //     tmpK = 'sad';
-    //   }
-    //   if (self.data.obj.faces.emotions.surprised > tmpV) {
-    //     tmpV = self.data.obj.faces.emotions.surprised;
-    //     tmpK = 'surprised';
-    //   }
-    //   if (self.data.obj.faces.emotions.confused > tmpV) {
-    //     tmpV = self.data.obj.faces.emotions.confused;
-    //     tmpK = 'confused';
-    //   }
-    //   if (self.data.obj.faces.emotions.squint > tmpV) {
-    //     tmpV = self.data.obj.faces.emotions.squint;
-    //     tmpK = 'squint';
-    //   }
-    //   if (self.data.obj.faces.emotions.screaming > tmpV) {
-    //     tmpV = self.data.obj.faces.emotions.screaming;
-    //     tmpK = 'screaming';
-    //   }
-    //   if (self.data.obj.faces.emotions.scared > tmpV) {
-    //     tmpV = self.data.obj.faces.emotions.scared;
-    //     tmpK = 'scared';
-    //   }
-    //   self.data.emotionV = tmpV;
-    //   self.data.emotionK = tmpK;
-    // }
+    // })
 
     var rect = JSON.parse(self.data.obj.data).faces[0].rect;
     var emotions = JSON.parse(self.data.obj.data).faces[0].emotions;
 
-    console.log(emotions);
+    
+    console.log(JSON.parse(self.data.obj.data).faces[0]);
+    console.log(JSON.parse(self.data.obj.data).faces[1]);
 
     var max = -1;
     var maxEmotion = "";
@@ -106,6 +65,51 @@ Page({
 
     console.log(max);
     console.log(maxEmotion);
+
+    wx.getImageInfo({
+      src:tmpFilePath,
+      success:function(res){
+        console.log("width!: "+res.width);
+        var width = res.width;
+        var height = res.height;
+      }
+    })
+
+    self.setData({
+      display: true,
+      width: width,
+      height: height
+    })
+    
+    console.log(self.data.display);
+    console.log("width: "+width);
+    console.log("height: "+height);
+
+    const ctx = wx.createCanvasContext('mCanvas');
+    ctx.drawImage(tmpFilePath, 0, 0, width, height);
+    ctx.draw();
+    ctx.setFontSize(14);//设置字号
+    if((rect[0]+rect[2]) < width){
+      var w1 = rect[2];//在中线左侧/认为右边地方大
+    }
+    else{
+      var w1 = rect[0];
+    }
+    if((rect[1]+rect[3]) < height){
+      var w2 = rect[3];//在中线上侧/认为下面地方大
+    }else{
+      var w2 = rect[1];
+    }
+    ctx.fillText("theWords", w1+20, w2+20);//写文字
+    
+    //保存图片
+    wx.canvasToTempFilePath({
+      canvasId:'mCanvas',
+      success:function (res) {
+        console.log(res.tempFilePath);
+      }
+    })
+
 
     // wx.downloadFile({
     //   url: downloadExampleUrl,
@@ -132,6 +136,8 @@ Page({
         console.log('chooseImage success, temp path is', res.tempFilePaths[0])
 
         var imageSrc = res.tempFilePaths[0]
+
+        self.setData({imageSrc});
 
         wx.uploadFile({
           url: uploadFileUrl,

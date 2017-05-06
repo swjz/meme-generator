@@ -27,5 +27,10 @@
     <view class="btn-area">
       <button bindtap="downloadImage" type="primary">生成</button>
     </view>
+     <!--<view class="page-section">
+      <view class="page-body-info">
+        <canvas canvas-id="mCanvas" display="{{display}}"/>
+      </view>
+    </view>-->
   </view>
 </view>
