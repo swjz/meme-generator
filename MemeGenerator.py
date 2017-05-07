@@ -53,7 +53,6 @@ def upload():
         sentenceInstance.chooseTheSentence(mostLikelyEmotion, gender=gender, age=age, attractive=attractive,
                                            eye_open=eye_open, mouth_open=mouth_open, sunglass=sunglass, smile=smile)
 
-
         # 打开底版图片
         imageFile = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'], 'base.jpg')
         image = Image.open(imageFile)
@@ -64,8 +63,8 @@ def upload():
         text = sentenceInstance.getTheSentence()
         print(type(text))
         # textUnicode = unicode(text, "utf-8")
-        textUnicode = text
-        textLength = len(textUnicode)
+        # textUnicode = text
+        textLength = len(text)
         fontSize = (int)(min(xSize, ySize) / 4 / textLength ** 0.5)
         font = ImageFont.truetype(font='/root/Arial Unicode.ttf', size=fontSize)
 
@@ -75,12 +74,32 @@ def upload():
         middleRed, middleGreen, middleBlue = image.getpixel((xSize / 2, 0.8 * ySize))
         rightRed, rightGreen, rightBlue = image.getpixel((xSize / 2 + offset, 0.8 * ySize))
 
-        textColor = (
-            255 - (leftRed + middleRed + rightRed) / 5, 255 - (leftGreen + middleGreen + rightGreen) / 5,
-            255 - (leftBlue + middleBlue + rightBlue) / 5)
+        # textColor = (
+        #     255 - (leftRed + middleRed + rightRed) / 5, 255 - (leftGreen + middleGreen + rightGreen) / 5,
+        #     255 - (leftBlue + middleBlue + rightBlue) / 5)
+        textColor = 'white'
 
         draw = ImageDraw.Draw(image)
-        draw.text([xSize / 2 - offset, 0.8 * ySize], textUnicode, textColor, font)
+
+        bp = 1
+        shadowcolor = 'black'
+        (x, y) = (xSize / 2 - offset, 0.8 * ySize)
+        draw.text((x - bp, y), text, font=font, fill=shadowcolor)
+        draw.text((x + bp, y), text, font=font, fill=shadowcolor)
+        draw.text((x, y - bp), text, font=font, fill=shadowcolor)
+        draw.text((x, y + bp), text, font=font, fill=shadowcolor)
+
+
+        # thicker border
+        draw.text((x - bp, y - bp), text, font=font, fill=shadowcolor)
+        draw.text((x + bp, y - bp), text, font=font, fill=shadowcolor)
+        draw.text((x - bp, y + bp), text, font=font, fill=shadowcolor)
+        draw.text((x + bp, y + bp), text, font=font, fill=shadowcolor)
+
+        # now draw the text over it
+        draw.text((x, y), text, font=font, fill=textColor)
+
+        # draw.text([xSize / 2 - offset, 0.8 * ySize], textUnicode, textColor, font)
         draw = ImageDraw.Draw(image)
 
         # 保存
